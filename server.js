@@ -1,15 +1,44 @@
-const socks = require('socksv5');
+var express = require('express');
+var app = express();
 
-const srv = socks.createServer(function(info, accept, deny) {
+
+var socks = require('socksv5');
+
+
+console.log(process.env);
+
+
+var mainPort = process.env.PORT || 3000;
+//var socks5Port = process.env.NODE_APP_SOCKSPORT || 1080;
+
+
+
+
+
+var srv = socks.createServer(function(info, accept, deny) {
   accept();
 });
-srv.listen(1080, 'localhost', function() {
-  console.log('SOCKS server listening on port 1080');
+srv.listen(mainPort, '0.0.0.0', function() {
+  console.log('SOCKS server listening on port',mainPort);
 });
 
+//process.env.NODE_APP_USERNAME = 'nodejs';
+//process.env.NODE_APP_PASSWORD = '123123';
 // srv.useAuth(socks.auth.None());
 
 srv.useAuth(socks.auth.UserPassword(function(user, password, cb) {
-	console.log('sockauth =',user === 'nodejs' && password === '123123');
-  cb(user === 'nodejs' && password === '123123');
+  cb(user === process.env.NODE_APP_USERNAME && password === process.env.NODE_APP_PASSWORD);
 }));
+
+
+/*
+app.use(function(req, res) {
+	res.end('ok');
+});
+
+
+app.listen(appPort, function() {
+    console.log('Express started on port',appPort);
+
+});
+*/
